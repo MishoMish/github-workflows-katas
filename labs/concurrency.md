@@ -83,7 +83,7 @@ concurrency:
 
 <details>
     <summary>Solution</summary>
-    
+
 ```YAML
   add-summary:
     runs-on: ubuntu-latest
