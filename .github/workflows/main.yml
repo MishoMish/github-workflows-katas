@@ -26,8 +26,8 @@ jobs:
         with:
           name: code
           path: .
-      - name: Fix gradlew permissions
-        run: chmod +x app/gradlew app/gradle/wrapper/gradle-wrapper.jar || true
+      - name: Remove gradlew to force Snyk to use system Gradle
+        run: rm -f app/gradlew app/gradlew.bat
       - name: Install Snyk CLI
         run: |
           curl -Lo snyk https://static.snyk.io/cli/latest/snyk-linux
@@ -35,14 +35,12 @@ jobs:
           mv snyk /usr/local/bin/
       - name: Authenticate Snyk
         run: snyk auth ${{ secrets.SNYK_TOKEN }}
-      - name: Find Gradle path
-        run: which gradle
       - name: Run Snyk test (check for vulnerabilities)
         working-directory: ./app
-        run: snyk test --all-projects --severity-threshold=high --gradle-executable=$(which gradle) || true
+        run: snyk test --all-projects --severity-threshold=high || true
       - name: Run Snyk monitor (send results to Snyk dashboard)
         working-directory: ./app
-        run: snyk monitor --all-projects --gradle-executable=$(which gradle) || true
+        run: snyk monitor --all-projects || true
   markdownlint:
     runs-on: ubuntu-latest
     steps:
