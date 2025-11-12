@@ -30,6 +30,8 @@ jobs:
         with:
           distribution: "temurin"
           java-version: "11"
+      - name: Make gradlew executable
+        run: chmod +x app/gradlew
       - name: Install Snyk CLI
         run: |
           curl -Lo snyk https://static.snyk.io/cli/latest/snyk-linux
