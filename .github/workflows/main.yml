@@ -56,6 +56,9 @@ jobs:
           echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
           sudo apt-get update
           sudo apt-get install -y trivy
+      - name: Install Python dependencies
+        run: |
+          pip install -r component-test/requirements.txt
       - name: Run Trivy filesystem scan
         run: trivy fs --severity HIGH,CRITICAL --exit-code 0 .
       - name: Run Trivy config scan
