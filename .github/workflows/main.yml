@@ -24,7 +24,7 @@ jobs:
         run: npm install -g markdownlint-cli
       - name: Run Markdown Lint
         run: markdownlint "**/*.md"
-  SonarCloud Scan:
+  SonarCloudScan:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
