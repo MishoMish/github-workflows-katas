@@ -18,6 +18,7 @@ jobs:
           include-hidden-files: true
   SnykScan:
     runs-on: ubuntu-latest
+    container: gradle:6-jdk11
     needs: [Build]
     steps:
       - name: Download code
@@ -25,30 +26,19 @@ jobs:
         with:
           name: code
           path: .
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: "temurin"
-          java-version: "11"
-      - name: Install Gradle
-        run: |
-          wget https://services.gradle.org/distributions/gradle-6.9.4-bin.zip
-          unzip -q gradle-6.9.4-bin.zip
-          sudo mv gradle-6.9.4 /opt/gradle
-          sudo ln -s /opt/gradle/bin/gradle /usr/local/bin/gradle
       - name: Install Snyk CLI
         run: |
           curl -Lo snyk https://static.snyk.io/cli/latest/snyk-linux
           chmod +x snyk
-          sudo mv snyk /usr/local/bin/
+          mv snyk /usr/local/bin/
       - name: Authenticate Snyk
         run: snyk auth ${{ secrets.SNYK_TOKEN }}
       - name: Run Snyk test (check for vulnerabilities)
         working-directory: ./app
-        run: snyk test --all-projects --severity-threshold=high --gradle-executable=gradle || true
+        run: snyk test --all-projects --severity-threshold=high || true
       - name: Run Snyk monitor (send results to Snyk dashboard)
         working-directory: ./app
-        run: snyk monitor --all-projects --gradle-executable=gradle || true
+        run: snyk monitor --all-projects || true
   markdownlint:
     runs-on: ubuntu-latest
     steps:
