@@ -6,13 +6,13 @@ jobs:
     container: gradle:6-jdk11
     steps:
       - name: Clone down repository
-        uses: actions/checkout@v4       
+        uses: actions/checkout@v4
       - name: Build application
         run: ci/build-app.sh
       - name: Test
         run: ci/unit-test-app.sh
       - uses: actions/upload-artifact@v4
-        with: 
+        with:
           name: code
           path: .
           include-hidden-files: true
@@ -26,10 +26,17 @@ jobs:
           name: code
           path: .
       - name: run linting
-        uses: super-linter/super-linter/slim@v7 
+        uses: super-linter/super-linter/slim@v7
         env:
           DEFAULT_BRANCH: main
           # To report GitHub Actions status checks
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DISABLE_ERRORS: true  
-
+          DISABLE_ERRORS: true
+  markdownlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Markdown Lint
+        uses: avto-dev/markdown-lint@v1
+        with:
+          config: ".markdownlint.json"
