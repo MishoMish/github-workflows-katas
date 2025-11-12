@@ -35,6 +35,17 @@ jobs:
         with:
           distribution: "temurin"
           java-version: "17"
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: ${{ runner.os }}-gradle-
+      - name: Build with Gradle
+        working-directory: ./app
+        run: ./gradlew build --no-daemon
       - name: Cache SonarCloud packages
         uses: actions/cache@v4
         with:
