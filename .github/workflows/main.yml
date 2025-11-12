@@ -35,12 +35,14 @@ jobs:
           mv snyk /usr/local/bin/
       - name: Authenticate Snyk
         run: snyk auth ${{ secrets.SNYK_TOKEN }}
+      - name: Find Gradle path
+        run: which gradle
       - name: Run Snyk test (check for vulnerabilities)
         working-directory: ./app
-        run: snyk test --all-projects --severity-threshold=high --command=gradle || true
+        run: snyk test --all-projects --severity-threshold=high --gradle-executable=$(which gradle) || true
       - name: Run Snyk monitor (send results to Snyk dashboard)
         working-directory: ./app
-        run: snyk monitor --all-projects --command=gradle || true
+        run: snyk monitor --all-projects --gradle-executable=$(which gradle) || true
   markdownlint:
     runs-on: ubuntu-latest
     steps:
