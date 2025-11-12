@@ -30,8 +30,12 @@ jobs:
         with:
           distribution: "temurin"
           java-version: "11"
-      - name: Make gradlew executable
-        run: chmod +x app/gradlew
+      - name: Install Gradle
+        run: |
+          wget https://services.gradle.org/distributions/gradle-6.9.4-bin.zip
+          unzip -q gradle-6.9.4-bin.zip
+          sudo mv gradle-6.9.4 /opt/gradle
+          sudo ln -s /opt/gradle/bin/gradle /usr/local/bin/gradle
       - name: Install Snyk CLI
         run: |
           curl -Lo snyk https://static.snyk.io/cli/latest/snyk-linux
@@ -41,10 +45,10 @@ jobs:
         run: snyk auth ${{ secrets.SNYK_TOKEN }}
       - name: Run Snyk test (check for vulnerabilities)
         working-directory: ./app
-        run: snyk test --all-projects --severity-threshold=high || true
+        run: snyk test --all-projects --severity-threshold=high --gradle-executable=gradle || true
       - name: Run Snyk monitor (send results to Snyk dashboard)
         working-directory: ./app
-        run: snyk monitor --all-projects || true
+        run: snyk monitor --all-projects --gradle-executable=gradle || true
   markdownlint:
     runs-on: ubuntu-latest
     steps:
