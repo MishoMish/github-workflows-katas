@@ -84,7 +84,7 @@ concurrency:
 <details>
     <summary>Solution</summary>
 
-```YAML
+````YAML
   add-summary:
     runs-on: ubuntu-latest
     needs: upload-tree
@@ -119,7 +119,7 @@ concurrency:
 git add .github/workflows/concurrency-lab.yml ci/generate-tree.sh
 git commit -m "Add concurrency workflow demonstration"
 git push
-````
+```
 
 </details>
 

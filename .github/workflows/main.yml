@@ -16,6 +16,33 @@ jobs:
           name: code
           path: .
           include-hidden-files: true
+  SnykScan:
+    runs-on: ubuntu-latest
+    needs: [Build]
+    steps:
+      - name: Download code
+        uses: actions/download-artifact@v4
+        with:
+          name: code
+          path: .
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "11"
+      - name: Install Snyk CLI
+        run: |
+          curl -Lo snyk https://static.snyk.io/cli/latest/snyk-linux
+          chmod +x snyk
+          sudo mv snyk /usr/local/bin/
+      - name: Authenticate Snyk
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+      - name: Run Snyk test (check for vulnerabilities)
+        working-directory: ./app
+        run: snyk test --all-projects --severity-threshold=high || true
+      - name: Run Snyk monitor (send results to Snyk dashboard)
+        working-directory: ./app
+        run: snyk monitor --all-projects || true
   markdownlint:
     runs-on: ubuntu-latest
     steps:
