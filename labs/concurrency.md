@@ -38,12 +38,12 @@ The workflow will have two jobs that work together: one that generates a directo
 ```YAML
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true 
+  cancel-in-progress: true
 ```
 
 </details>
 
-3. **Create the 'upload-tree' Job**  
+1. **Create the 'upload-tree' Job**
    Add a job that runs on the latest Ubuntu runner with the following steps:
    - Check out the repository
    - Generate directory tree using the provided script
@@ -51,13 +51,13 @@ concurrency:
    - Simulate work by pausing for 10 seconds
 
 <details>
-  <summary>Solution</summary> 
+  <summary>Solution</summary>
 
 ```YAML
   upload-tree:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout 
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Generate directory tree
@@ -75,7 +75,7 @@ concurrency:
 
 </details>
 
-4. **Create the 'add-summary' Job**  
+1. **Create the 'add-summary' Job**
    Add a second job that depends on the first job and runs on the latest Ubuntu runner with the following steps:
    - Download the tree artifact
    - Simulate work by pausing for 10 seconds
@@ -83,8 +83,8 @@ concurrency:
 
 <details>
     <summary>Solution</summary>
-    
-```YAML
+
+````YAML
   add-summary:
     runs-on: ubuntu-latest
     needs: upload-tree
@@ -104,11 +104,12 @@ concurrency:
           echo '```' >> $GITHUB_STEP_SUMMARY
           cat tree.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-```
+
+````
 
 </details>
 
-5. **Test the Concurrency Behavior**  
+1. **Test the Concurrency Behavior**
    Save and commit the workflow file, then go to the Actions tab in your GitHub repository. Trigger the workflow twice in quick succession to observe that only the jobs from the last triggered workflow will run, as earlier runs will be cancelled due to the concurrency settings.
 
 <details>
@@ -125,6 +126,7 @@ git push
 ### Results
 
 You should see that when you trigger the workflow multiple times rapidly:
+
 - Only the most recent workflow run completes
 - Previous runs are cancelled automatically
 - The workflow summary displays the project directory tree
@@ -133,7 +135,7 @@ You should see that when you trigger the workflow multiple times rapidly:
 <details>
   <summary>Complete Solution</summary>
 
-```YAML
+````YAML
 name: Concurrency Demo
 
 on:
@@ -147,7 +149,7 @@ jobs:
   upload-tree:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout 
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Generate directory tree
@@ -160,7 +162,7 @@ jobs:
           path: tree.txt
 
       - name: Simulate work
-        run: sleep 10  
+        run: sleep 10
 
   add-summary:
     runs-on: ubuntu-latest
@@ -181,7 +183,7 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
           cat tree.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-```
+````
 
 </details>
 
@@ -195,4 +197,3 @@ Congratulations! You have successfully implemented workflow concurrency controls
 - Create workflow summaries for better visibility into your pipeline results
 
 This concurrency pattern is especially valuable for deployment workflows where you want to ensure only one deployment happens at a time, preventing conflicts and ensuring consistency.
-
